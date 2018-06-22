@@ -1,0 +1,54 @@
+---
+    - name: Get Existing Alert Setting
+      raw: racadm getconfig -g cfgAlerting -o cfgAlertingEnable
+      when: alerting_enable is defined
+      register: cmc_alerting_enable
+      failed_when: "'ERROR' in cmc_alerting_enable.stdout or 'Invalid' in cmc_alerting_enable.stdout"
+      changed_when: False
+
+    - name: Set Alert Setting
+      raw : racadm config -g cfgAlerting -o cfgAlertingEnable {{ alerting_enable }}  
+      when: 
+        - alerting_enable is defined
+        - alerting_enable not in cmc_alerting_enable.stdout  
+      register: result
+      failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout" 
+
+    - name: Get Existing Source Email Address
+      raw: racadm getconfig -g cfgAlerting -o cfgAlertingSourceEmailName
+      when: source_email_name is defined
+      register: cmc_source_email_name
+      failed_when: "'ERROR' in cmc_source_email_name.stdout or 'Invalid' in cmc_source_email_name.stdout"
+      changed_when: False
+
+    - name: Set Source Email Address
+      raw : racadm config -g cfgAlerting -o cfgAlertingSourceEmailName "{{ source_email_name }}"
+      when: 
+        - source_email_name is defined
+        - source_email_name not in cmc_source_email_name.stdout  
+      register: result
+      failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout" 
+
+    - name: Get Existing Target Email Address 1
+      raw: racadm getconfig -g cfgEmailAlert -o cfgEmailAlertAddress -i 1
+      when: alert_email_target_1 is defined
+      register: cmc_alert_email_target_1
+      failed_when: "'ERROR' in cmc_source_email_name.stdout or 'Invalid' in cmc_source_email_name.stdout"
+      changed_when: False
+
+    - name: Set Target Email Address 1
+      raw : racadm config -g cfgEmailAlert -o cfgEmailAlertAddress -i 1 "{{ alert_email_target_1 }}"
+      when:
+        - alert_email_target_1_enable == "1"
+        - alert_email_target_1 is defined
+        - alert_email_target_1 not in cmc_alert_email_target_1.stdout  
+      register: result
+      failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout" 
+    
+    - name: Set Target Email Address 1 Enable
+      raw : racadm config -g cfgEmailAlert -o cfgEmailAlertEnable -i 1 "{{ alert_email_target_1_enable }}" 
+      when: alert_email_target_1_enable is defined 
+      register: result
+      failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout"
+
+    

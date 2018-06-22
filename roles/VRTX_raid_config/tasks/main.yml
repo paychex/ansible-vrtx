@@ -1,0 +1,18 @@
+---
+  - name: Get RAID Status
+    raw: racadm raid get status
+    register: raid_status
+    failed_when: "'OK' not in raid_status.stdout" 
+    changed_when: False
+  
+  - name: Get list of physical disks
+    raw: racadm raid get pdisks
+    register: raid_pdisks
+    changed_when: False
+
+  # This set of tasks lays down a base configuration ... we dont want this running if there is an existing vdisk
+  - name: Get list of vdisks
+    raw: racadm raid get vdisks
+    register: raid_list_vdisks
+    failed_when: "'Disk' in raid_list_vdisks.stdout" 
+    changed_when: False

@@ -1,0 +1,138 @@
+---
+    # If you are setting blade names directly, you have to disable the "read host name" setting
+    - name: Get Slot Name Configuration
+      raw: racadm getslotname -h
+      when: slot_name_config is defined
+      register: cmc_slot_name_config
+      changed_when: False
+      failed_when: "'ERROR' in cmc_slot_name_config.stdout or 'Invalid' in cmc_slot_name_config.stdout"
+
+    - name: Set Slot Name Configuration
+      raw : racadm setslotname -h {{ slot_name_config }}  
+      register: result
+      when: 
+        - slot_name_config is defined
+        - slot_name_config not in cmc_slot_name_config.stdout
+      failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout"
+
+    - name: Get Existing Blade 1 Name
+      raw: racadm getslotname -i 1
+      when: server1_name is defined
+      register: cmc_server1_name
+      changed_when: False
+      failed_when: "'ERROR' in cmc_server1_name.stdout or 'Invalid' in cmc_server1_name.stdout"
+
+    - name: Set Blade 1 Name
+      raw : racadm setslotname -i 1 "{{ server1_name }}"
+      when: 
+        - server1_name is defined
+        - server1_name not in cmc_server1_name.stdout  
+      register: result
+      failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout"
+    
+    - name: Get Existing Blade 2 Name
+      raw: racadm getslotname -i 2
+      when: server2_name is defined
+      register: cmc_server2_name
+      changed_when: False
+      failed_when: "'ERROR' in cmc_server2_name.stdout or 'Invalid' in cmc_server2_name.stdout"
+
+    - name: Set Blade 2 Name
+      raw : racadm setslotname -i 2 "{{ server2_name }}"
+      when: 
+        - server2_name is defined
+        - server2_name not in cmc_server2_name.stdout  
+      register: result
+      failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout"
+
+    - name: Get Existing Blade 3 Name
+      raw: racadm getslotname -i 3
+      when: server3_name is defined
+      register: cmc_server3_name
+      changed_when: False
+      failed_when: "'ERROR' in cmc_server3_name.stdout or 'Invalid' in cmc_server3_name.stdout"
+
+    - name: Set Blade 3 Name
+      raw : racadm setslotname -i 3 "{{ server3_name }}"
+      when: 
+        - server3_name is defined
+        - server3_name not in cmc_server1_name.stdout  
+      register: result
+      failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout"
+    
+    - name: Get Existing Blade 4 Name
+      raw: racadm getslotname -i 4
+      when: server4_name is defined
+      register: cmc_server4_name
+      changed_when: False
+      failed_when: "'ERROR' in cmc_server4_name.stdout or 'Invalid' in cmc_server4_name.stdout"
+
+    - name: Set Blade 4 Name
+      raw : racadm setslotname -i 4 "{{ server4_name }}"
+      when: 
+        - server4_name is defined
+        - server4_name not in cmc_server4_name.stdout  
+      register: result
+      failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout"
+
+
+# iDRAC config
+    - name: Get Existing Blade 1 iDRAC info
+      raw: racadm getniccfg -m server-1
+      when: server1_idrac_ip is defined
+      register: cmc_server1_idrac_ip
+      changed_when: False
+      failed_when: "'ERROR' in cmc_server1_idrac_ip.stdout or 'Invalid' in cmc_server1_idrac_ip.stdout"
+
+    - name: Set Blade 1 iDRAC info
+      raw : racadm setniccfg -m server-1 -s "{{ server1_idrac_ip }}" "{{ mgmt_netmask }}" "{{ mgmt_gw }}"
+      when: 
+        - server1_idrac_ip is defined
+        - server1_idrac_ip not in cmc_server1_idrac_ip.stdout  
+      register: result
+      failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout"
+
+    - name: Get Existing Blade 2 iDRAC info
+      raw: racadm getniccfg -m server-2
+      when: server2_idrac_ip is defined
+      register: cmc_server2_idrac_ip
+      changed_when: False
+      failed_when: "'ERROR' in cmc_server2_idrac_ip.stdout or 'Invalid' in cmc_server2_idrac_ip.stdout"
+
+    - name: Set Blade 2 iDRAC info
+      raw : racadm setniccfg -m server-2 -s "{{ server2_idrac_ip }}" "{{ mgmt_netmask }}" "{{ mgmt_gw }}"
+      when: 
+        - server2_idrac_ip is defined
+        - server2_idrac_ip not in cmc_server2_idrac_ip.stdout  
+      register: result
+      failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout"
+
+    - name: Get Existing Blade 3 iDRAC info
+      raw: racadm getniccfg -m server-3
+      when: server3_idrac_ip is defined
+      register: cmc_server3_idrac_ip
+      changed_when: False
+      failed_when: "'ERROR' in cmc_server3_idrac_ip.stdout or 'Invalid' in cmc_server3_idrac_ip.stdout"
+
+    - name: Set Blade 3 iDRAC info
+      raw : racadm setniccfg -m server-3 -s "{{ server3_idrac_ip }}" "{{ mgmt_netmask }}" "{{ mgmt_gw }}"
+      when: 
+        - server3_idrac_ip is defined
+        - server3_idrac_ip not in cmc_server3_idrac_ip.stdout  
+      register: result
+      failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout"
+
+    - name: Get Existing Blade 4 iDRAC info
+      raw: racadm getniccfg -m server-4
+      when: server4_idrac_ip is defined
+      register: cmc_server4_idrac_ip
+      changed_when: False
+      failed_when: "'ERROR' in cmc_server4_idrac_ip.stdout or 'Invalid' in cmc_server4_idrac_ip.stdout"
+
+    - name: Set Blade 4 iDRAC info
+      raw : racadm setniccfg -m server-4 -s "{{ server4_idrac_ip }}" "{{ mgmt_netmask }}" "{{ mgmt_gw }}"
+      when: 
+        - server4_idrac_ip is defined
+        - server4_idrac_ip not in cmc_server4_idrac_ip.stdout  
+      register: result
+      failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout"

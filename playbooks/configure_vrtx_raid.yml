@@ -1,0 +1,12 @@
+# Copyright 2018 Paychex Inc. All rights reserved.
+# Use of this source code is governed by the Apache 2.0
+# license that can be found in the LICENSE file.
+
+- name: Configure RAID on new VRTX Chassis
+  hosts: all
+  user: root
+  become: yes
+  gather_facts: false
+  roles:
+    - role: ../roles/VRTX_raid_config
+

@@ -1,0 +1,93 @@
+---
+    - name: Get Existing NTP Enabled Setting
+      raw: racadm getconfig -g cfgRemoteHosts -o cfgRhostsNtpEnable
+      register: cmc_ntp_enable
+      when: ntp_enable is defined
+      failed_when: "'ERROR' in cmc_ntp_enable.stdout or 'Invalid' in cmc_ntp_enable.stdout"
+      changed_when: False
+
+    - name: Set NTP Enabled setting
+      raw: racadm config -g cfgRemoteHosts -o cfgRhostsNtpEnable {{ ntp_enable }}  
+      when:
+        - ntp_enable is defined 
+        - ntp_enable not in cmc_ntp_enable.stdout  
+      register: result
+      failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout" 
+
+    - name: Get Existing NTP Setting Server
+      raw: racadm getconfig -g cfgRemoteHosts -o cfgRhostsNtpServer1
+      register: cmc_ntp_server1
+      when:
+        - ntp_enable == "1"
+        - ntp_server1 is defined
+      failed_when: "'ERROR' in cmc_ntp_server1.stdout or 'Invalid' in cmc_ntp_server1.stdout"
+      changed_when: False
+
+    - name: Set NTP Server1 setting
+      raw: racadm config -g cfgRemoteHosts -o cfgRhostsNtpServer1 {{ ntp_server1 }}  
+      when:
+        - ntp_enable == "1"
+        - ntp_server1 is defined
+        - ntp_server1 not in cmc_ntp_server1.stdout  
+      register: result
+      failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout" 
+
+    - name: Get Existing SMTP Server Setting
+      raw: racadm getconfig -g cfgRemoteHosts -o cfgRhostsSmtpServerIpAddr
+      when: smtp_server is defined
+      register: cmc_smtp_server
+      failed_when: "'ERROR' in cmc_smtp_server.stdout or 'Invalid' in cmc_smtp_server.stdout"
+      changed_when: False
+
+    - name: Set SMTP Server setting
+      raw: racadm config -g cfgRemoteHosts -o cfgRhostsSmtpServerIpAddr {{ smtp_server }}  
+      when:
+        - smtp_server is defined
+        - smtp_server not in cmc_smtp_server.stdout  
+      register: result
+      failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout" 
+
+    - name: Get Existing LCD Locale
+      raw: racadm getconfig -g cfgLcdInfo -o cfgLcdLocale
+      when: lcd_locale is defined
+      register: cmc_lcd_locale
+      failed_when: "'ERROR' in cmc_lcd_locale.stdout or 'Invalid' in cmc_lcd_locale.stdout"
+      changed_when: False
+
+    - name: Set LCD Locale
+      raw: racadm config -g cfgLcdInfo -o cfgLcdLocale {{ lcd_locale }}  
+      when: 
+        - lcd_locale is defined
+        - lcd_locale not in cmc_lcd_locale.stdout  
+      register: result
+      failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout"    
+    
+    - name: Get Existing LCD Orientation
+      raw: racadm getconfig -g cfgLcdInfo -o cfgLcdOrientation
+      when: lcd_orientation is defined
+      register: cmc_lcd_orientation
+      failed_when: "'ERROR' in cmc_lcd_orientation.stdout or 'Invalid' in cmc_lcd_orientation.stdout"
+      changed_when: False
+
+    - name: Set LCD Orientation
+      raw: racadm config -g cfgLcdInfo -o cfgLcdOrientation {{ lcd_Orientation }}  
+      when: 
+        - lcd_orientation is defined
+        - lcd_orientation not in cmc_lcd_orientation.stdout  
+      register: result
+      failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout"   
+      
+    - name: Get Existing Button Enable Setting
+      raw: racadm getconfig -g cfgLcdInfo -o cfgLcdButtonsEnable
+      when: lcd_buttons_enable is defined
+      register: cmc_lcd_buttons_enable
+      failed_when: "'ERROR' in cmc_lcd_buttons_enable.stdout or 'Invalid' in cmc_lcd_buttons_enable.stdout"
+      changed_when: False
+
+    - name: Set Button Enable Setting
+      raw: racadm config -g cfgLcdInfo -o cfgLcdButtonsEnable {{ lcd_buttons_enable }}  
+      when: 
+        - lcd_buttons_enable is defined
+        - lcd_buttons_enable not in cmc_lcd_buttons_enable.stdout  
+      register: result
+      failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout"    

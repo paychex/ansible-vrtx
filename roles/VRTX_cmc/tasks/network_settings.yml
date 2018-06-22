@@ -1,0 +1,73 @@
+---
+    - name: Get Existing DHCP Enabled Setting
+      raw: racadm getconfig -g cfgLanNetworking -o cfgNicUseDhcp
+      register: cmc_dhcp_enable
+      failed_when: "'ERROR' in cmc_dhcp_enable.stdout or 'Invalid' in cmc_dhcp_enable.stdout"
+      changed_when: False
+
+    - name: Set DHCP Enabled setting
+      raw : racadm config -g cfgLanNetworking -o cfgNicUseDhcp {{ dhcp_enable }}  
+      when: dhcp_enable not in cmc_dhcp_enable.stdout  
+      register: result
+      failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout" 
+    
+    - name: Get Existing IPv6 Enabled Setting
+      raw: racadm getconfig -g cfgIPv6LanNetworking -o cfgIPv6Enable
+      register: cmc_ipv6_enable
+      failed_when: "'ERROR' in cmc_ipv6_enable.stdout or 'Invalid' in cmc_ipv6_enable.stdout"
+      changed_when: False
+
+    - name: Set ipv6 Enabled setting
+      raw : racadm config -g cfgIPv6LanNetworking -o cfgIPv6Enable {{ ipv6_enable }}  
+      when: ipv6_enable not in cmc_ipv6_enable.stdout  
+      register: result
+      failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout" 
+
+    - name: Get DNS Servers from DHCP Setting
+      raw: racadm getconfig -g cfgLanNetworking -o cfgDNSServersFromDHCP
+      register: cmc_dns_from_dhcp_config
+      changed_when: False
+      failed_when: "'ERROR' in cmc_dns_from_dhcp_config.stdout or 'Invalid' in cmc_dns_from_dhcp_config.stdout"
+
+    - name: Set DNS Servers from DHCP Setting
+      raw : racadm racadm getconfig -g cfgLanNetworking -o cfgDNSServersFromDHCP {{ dns_from_dhcp_config }}
+      become: False  
+      register: result
+      when: dns_from_dhcp_config not in cmc_dns_from_dhcp_config.stdout
+      failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout"
+
+    - name: Get Existing DNS Domain Name
+      raw: racadm getconfig -g cfgLanNetworking -o cfgDNSDomainName
+      register: cmc_dns_domain_name
+      failed_when: "'ERROR' in cmc_dns_domain_name.stdout or 'Invalid' in cmc_dns_domain_name.stdout"
+      changed_when: False
+
+    - name: Set DNS Domain Name
+      raw : racadm config -g cfgLanNetworking -o cfgDNSDomainName {{ dns_domain_name }}  
+      when: dns_domain_name not in cmc_dns_domain_name.stdout  
+      register: result
+      failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout" 
+
+    - name: Get Existing DNS Server 1 Setting
+      raw: racadm getconfig -g cfgLanNetworking -o cfgDNSServer1
+      register: cmc_dns_server_1
+      failed_when: "'ERROR' in cmc_dns_server_1.stdout or 'Invalid' in cmc_dns_server_1.stdout"
+      changed_when: False
+
+    - name: Set DNS Server 1 Setting
+      raw : racadm config -g cfgLanNetworking -o cfgDNSServer1 {{ dns_server_1 }}  
+      when: dns_server_1 not in cmc_dns_server_1.stdout  
+      register: result
+      failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout" 
+
+    - name: Get Existing DNS Server 2 Setting
+      raw: racadm getconfig -g cfgLanNetworking -o cfgDNSServer2
+      register: cmc_dns_server_2
+      failed_when: "'ERROR' in cmc_dns_server_2.stdout or 'Invalid' in cmc_dns_server_2.stdout"
+      changed_when: False
+
+    - name: Set DNS Server 2 Setting
+      raw : racadm config -g cfgLanNetworking -o cfgDNSServer1 {{ dns_server_2 }}  
+      when: dns_server_2 not in cmc_dns_server_2.stdout  
+      register: result
+      failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout" 

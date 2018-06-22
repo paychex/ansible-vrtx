@@ -1,0 +1,37 @@
+---
+    - name: Get Existing VRTX Chassis Name
+      raw: racadm getchassisname
+      register: cmc_chassis_name
+      when: chassis_name is defined
+      failed_when: "'ERROR' in cmc_chassis_name.stdout or 'Invalid' in cmc_chassis_name.stdout" 
+      changed_when: False
+
+    - name: Set VRTX Chassis Name
+      raw: racadm setchassisname "{{ chassis_name }}"
+      when:
+        - chassis_name is defined
+        - chassis_name not in cmc_chassis_name.stdout  
+      register: result
+      failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout" 
+
+    - name: Get Existing VRTX Chassis Location
+      raw: racadm getconfig -g cfgLocation -o cfgLocationDatacenter
+      register: cmc_chassis_location
+      when: chassis_location is defined
+      failed_when: "'ERROR' in cmc_chassis_location.stdout or 'Invalid' in cmc_chassis_location.stdout" 
+      changed_when: False
+
+    - name: Set VRTX Chassis Location
+      raw: racadm config -g cfgLocation -o cfgLocationDatacenter "{{ chassis_location }}"
+      when: 
+        - chassis_location is defined
+        - chassis_location not in cmc_chassis_location.stdout  
+      register: result
+      failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout"
+
+    - import_tasks: network_settings.yml
+    - import_tasks: switch_settings.yml
+    - import_tasks: blade_settings.yml
+    - import_tasks: ancillary_settings.yml
+    - import_tasks: alert_settings.yml
+    - import_tasks: snmp_settings.yml

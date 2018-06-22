@@ -1,0 +1,22 @@
+---
+# The built in switch starts out with SSH disabled, and telnet enabled
+# we will use the ansible telnet module to do some quick config commands
+# suggest running the change password playbook to update over SSH
+# NOTE, this will only work for a switch in the default config using the default username/password
+
+ - name: enable ssh and disable telnet
+   telnet:
+      user: root
+      password: calvin
+      prompts:
+       - "[>|#]"
+      command:
+        - configure
+        - crypto key generate rsa 
+        - Y 
+        - crypto key generate dsa
+        - Y
+        - ip ssh server
+        - exit
+        - copy running-config startup-config
+     

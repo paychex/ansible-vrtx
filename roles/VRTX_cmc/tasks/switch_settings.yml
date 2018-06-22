@@ -1,0 +1,23 @@
+---
+# This set of tasks has been tested with R1-2401 Switch
+# Assumes that if you didnt explicitly set a switch IP in the hosts file, that it must use DHCP
+    - name: Get Existing Switch Networking Config
+      raw: racadm getniccfg -m switch-1
+      register: cmc_switch1_ip
+      changed_when: False
+      failed_when: "'ERROR' in cmc_switch1_ip.stdout or 'Invalid' in cmc_switch1_ip.stdout"
+
+    - name: Set Switch Networking Config
+      raw : racadm setniccfg -m switch-1 -s "{{ switch1_ip }}" "{{ mgmt_netmask }}" "{{ mgmt_gw }}"
+      when: 
+        - switch1_ip is defined
+        - switch1_ip not in cmc_switch1_ip.stdout  
+      register: result
+      failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout"
+    
+    - name: Enable DHCP when static IP not assigned
+      raw : racadm setniccfg -m switch-1 -d
+      when: 
+        - switch1_ip is not defined
+      register: result
+      failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout"

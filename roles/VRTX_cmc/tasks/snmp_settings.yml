@@ -1,0 +1,52 @@
+---
+  - name: Get Existing SNMP Setting
+    raw: racadm getconfig -g cfgOobSnmp -o cfgOobSnmpAgentEnable
+    when: snmp_enable is defined
+    register: cmc_snmp_enable
+    failed_when: "'ERROR' in cmc_snmp_enable.stdout or 'Invalid' in cmc_snmp_enable.stdout"
+    changed_when: False
+
+  - name: Set SNMP Setting
+    raw : racadm config -g cfgOobSnmp -o cfgOobSnmpAgentEnable {{ snmp_enable }}  
+    when: 
+      - snmp_enable is defined
+      - snmp_enable not in cmc_snmp_enable.stdout  
+    register: result
+    failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout" 
+  
+  - name: Get Existing SNMP Community String
+    raw: racadm getconfig -g cfgOobSnmp -o cfgOobSnmpAgentCommunity
+    when: 
+      - snmp_enable == "1"
+      - snmp_community is defined
+    register: cmc_snmp_community
+    failed_when: "'ERROR' in cmc_snmp_community.stdout or 'Invalid' in cmc_snmp_community.stdout"
+    changed_when: False
+
+  - name: Set SNMP Community String
+    raw : racadm config -g cfgOobSnmp -o cfgOobSnmpAgentCommunity "{{ snmp_community }}"
+    when: 
+      - snmp_community is defined
+      - snmp_community not in cmc_snmp_community.stdout  
+    register: result
+    failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout" 
+
+  # for configuration of SNMP protocols fdoes not use the index numbers to display the selection, but instead translates them to actual meaning.
+  # this makes checking existing settings much more difficult.  For now we will just always commit a change instead of checking first
+  # will limit this work by at least ensuring that we are enabling SNMP
+
+  - name: Set SNMP Trap Version
+    raw: racadm config -g cfgOobSnmp -o cfgOobSnmpTrapFormat "{{ snmp_trap_format }}"
+    when: 
+      - snmp_enable == "1"
+      - snmp_trap_format is defined
+    register: result
+    failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout" 
+
+  - name: Set SNMP Protocol Version
+    raw: racadm config -g cfgOobSnmp -o cfgOobSnmpProtocol "{{ snmp_protocol }}"
+    when: 
+      - snmp_enable == "1"
+      - snmp_protocol is defined
+    register: result
+    failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout" 
