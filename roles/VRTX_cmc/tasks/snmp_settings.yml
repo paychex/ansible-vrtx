@@ -31,7 +31,7 @@
     register: result
     failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout" 
 
-  # for configuration of SNMP protocols fdoes not use the index numbers to display the selection, but instead translates them to actual meaning.
+  # for configuration of SNMP protocols Dell does not use the index numbers to display the selection, but instead translates them to actual meaning.
   # this makes checking existing settings much more difficult.  For now we will just always commit a change instead of checking first
   # will limit this work by at least ensuring that we are enabling SNMP
 
@@ -50,3 +50,34 @@
       - snmp_protocol is defined
     register: result
     failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout" 
+
+  - name: Get Existing SNMP Trap Setting 1
+    raw: racadm getconfig -g cfgTraps -o cfgTrapsEnable -i 1
+    when: snmp_trap_enable_1 is defined
+    register: cmc_snmp_trap_enable_1
+    failed_when: "'ERROR' in cmc_snmp_trap_enable_1.stdout or 'Invalid' in cmc_snmp_trap_enable_1.stdout"
+    changed_when: False
+
+  - name: Set SNMP Trap Setting 1
+    raw : racadm config -g cfgTraps -o cfgTrapsEnable {{ snmp_trap_enable_1 }} -i 1
+    when: 
+      - snmp_trap_enable_1 is defined
+      - snmp_trap_enable_1 not in cmc_snmp_trap_enable_1.stdout  
+    register: result
+    failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout"
+
+  - name: Get Existing SNMP Trap Destination 1
+    raw: racadm getconfig -g cfgTraps -o cfgTrapsAlertDestIpAddr -i 1
+    when: snmp_trap_destination_1 is defined
+    register: cmc_snmp_trap_destination_1
+    failed_when: "'ERROR' in cmc_snmp_trap_destination_1.stdout or 'Invalid' in cmc_snmp_trap_destination_1.stdout"
+    changed_when: False
+
+  - name: Set SNMP Trap Destination IP 1
+    raw : racadm config -g cfgTraps -o cfgTrapsAlertDestIpAddr {{ snmp_trap_destination_1 }} -i 1 
+    when: 
+      - snmp_trap_destination_1 is defined
+      - snmp_trap_enable_1 == "1"
+      - snmp_trap_destination_1 not in cmc_snmp_trap_destination_1.stdout  
+    register: result
+    failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout"

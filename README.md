@@ -12,6 +12,12 @@ $ ANSIBLE_CONFIG=<path to cfg file>
 $ export ANSIBLE_CONFIG
 ```
 
+or run the included setup script
+
+``` bash
+$ source setup.sh
+```
+
 ## Host file configuration
 
 Use the included "inventory/hosts" file as an example for what needs to be defined.  At a minimum the following information is required:
@@ -46,6 +52,10 @@ The following variables can be defined/used either in the all:vars section or ov
 | snmp_community              |          | community string for the snmp agent                                                   |
 | snmp_protocol               |          | configure default SNMP version ALL [0], or SNMPv3 [1]                                 |
 | snmp_trap_format            |          | configure SNMP trap version SNMPv1 [0], SNMPv2 [1], or SNMPv3 [2]                     |
+| snmp_trap_enable_1          |          | enable [1] or disable [0] sending of snmp traps 1                                     |
+| snmp_trap_destination_1     |          | IP address of trap destination 1                                                      |
+| snmp_trap_enable_2          |          | enable [1] or disable [0] sending of snmp traps 2                                     |
+| snmp_trap_destination_2     |          | IP address of trap destination 2                                                      |
 | switch1_ip                  |          | disabled DHCP for built in switch and assigns static IP to internal switch            |
 | lcd_locale                  |          | set the locale for the chassis display. valid options are en, es, fr                  |
 | lcd_orientation             |          | vertical [0] horizontal [1]                                                           |
