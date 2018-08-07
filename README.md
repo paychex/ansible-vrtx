@@ -54,6 +54,7 @@ The following variables can be defined/used either in the all:vars section or ov
 | snmp_trap_format            |          | configure SNMP trap version SNMPv1 [0], SNMPv2 [1], or SNMPv3 [2]                     |
 | snmp_trap_enable_1          |          | enable [1] or disable [0] sending of snmp traps 1                                     |
 | snmp_trap_destination_1     |          | IP address of trap destination 1                                                      |
+| snmp_trap_community_1       |          | Community string for trap 1 destination                                               |
 | snmp_trap_enable_2          |          | enable [1] or disable [0] sending of snmp traps 2                                     |
 | snmp_trap_destination_2     |          | IP address of trap destination 2                                                      |
 | switch1_ip                  |          | disabled DHCP for built in switch and assigns static IP to internal switch            |

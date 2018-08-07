@@ -81,3 +81,19 @@
       - snmp_trap_destination_1 not in cmc_snmp_trap_destination_1.stdout  
     register: result
     failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout"
+
+  - name: Get Existing SNMP Trap Community String 1
+    raw: racadm getconfig -g cfgTraps -o cfgTrapsCommunityName -i 1
+    when: snmp_trap_community_1 is defined
+    register: cmc_snmp_trap_community_1
+    failed_when: "'ERROR' in cmc_snmp_trap_community_1.stdout or 'Invalid' in cmc_snmp_trap_community_1.stdout"
+    changed_when: False
+
+  - name: Set SNMP Trap Community String 1
+    raw : racadm config -g cfgTraps -o cfgTrapsCommunityName {{ snmp_trap_community_1 }} -i 1 
+    when: 
+      - snmp_trap_community_1 is defined
+      - snmp_trap_enable_1 == "1"
+      - snmp_trap_community_1 not in cmc_snmp_trap_community_1.stdout  
+    register: result
+    failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout"
