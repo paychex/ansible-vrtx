@@ -11,8 +11,49 @@
     changed_when: False
 
   # This set of tasks lays down a base configuration ... we dont want this running if there is an existing vdisk
-  - name: Get list of vdisks
+  - name: Get list of vdisks and fail if defined
     raw: racadm raid get vdisks
     register: raid_list_vdisks
     failed_when: "'Disk' in raid_list_vdisks.stdout" 
     changed_when: False
+
+  - name: create linux_os vdisk
+    raw: racadm raid {{ raid_1_config }}
+    register: result
+
+  - debug:
+      var: result
+  
+  # Now that we got to this point, we need a list of the vdisks to encrypt them
+  - name: Get list of vdisks
+    raw: racadm raid get vdisks
+    register: raid_list_vdisks_created
+    retries: 5
+    delay: 10
+    until: "'Disk' in raid_list_vdisks_created.stdout" 
+    changed_when: False
+
+  - name: Ensure encryption configured
+    raw: racadm raid get controllers -o
+    when: encryption_enable == "1"
+    register: encryption_check
+    changed_when: False
+
+  - name: Configure encryption
+    raw: racadm raid createsecuritykey:RAID.ChassisIntegrated.2-1 -key {{ encryption_key_name }} -passwd {{ encryption_key_password }}
+    when:
+      - encryption_enable == "1"
+      - '"Encryption Capable" in encryption_check.stdout'
+  
+  - name: enable encryption
+    raw: "racadm raid encryptvd:{{ item }}"
+    with_items: "{{ raid_list_vdisks_created.stdout_lines }}"
+    when: encryption_enable == "1"
+
+  - name: assign disks to servers
+    raw: "{{ item }}"
+    with_items:
+      - "racadm raid assignva:RAID.ChassisIntegrated.1-1-1 -vdkey:Disk.Virtual.0:RAID.ChassisIntegrated.1-1 -accesspolicy rw -assignpolicy multiple"
+      - "racadm raid assignva:RAID.ChassisIntegrated.1-1-2 -vdkey:Disk.Virtual.0:RAID.ChassisIntegrated.1-1 -accesspolicy rw -assignpolicy multiple"
+      - "racadm raid assignva:RAID.ChassisIntegrated.1-1-3 -vdkey:Disk.Virtual.0:RAID.ChassisIntegrated.1-1 -accesspolicy rw -assignpolicy multiple"
+      - "racadm raid assignva:RAID.ChassisIntegrated.1-1-4 -vdkey:Disk.Virtual.0:RAID.ChassisIntegrated.1-1 -accesspolicy rw -assignpolicy multiple"

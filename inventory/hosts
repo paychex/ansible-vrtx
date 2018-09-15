@@ -32,6 +32,9 @@ alert_email_target_1_enable="1"
 lcd_locale="en"
 lcd_orientation="0"
 lcd_buttons_enable="0"
+encryption_enable="1"
+encryption_key_name="mykeyname"
+encryption_key_password="!MyPassword21"
 raid_1_config="createvd:RAID.ChassisIntegrated.1-1 -rl r6 -pdkey:Disk.Bay.0:Enclosure.Internal.0-0:RAID.ChassisIntegrated.1-1,Disk.Bay.1:Enclosure.Internal.0-0:RAID.ChassisIntegrated.1-1,Disk.Bay.2:Enclosure.Internal.0-0:RAID.ChassisIntegrated.1-1,Disk.Bay.3:Enclosure.Internal.0-0:RAID.ChassisIntegrated.1-1,Disk.Bay.4:Enclosure.Internal.0-0:RAID.ChassisIntegrated.1-1"
 
 

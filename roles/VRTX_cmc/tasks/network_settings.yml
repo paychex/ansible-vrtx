@@ -56,7 +56,10 @@
 
     - name: Set DNS Server 1 Setting
       raw : racadm config -g cfgLanNetworking -o cfgDNSServer1 {{ dns_server_1 }}  
-      when: dns_server_1 not in cmc_dns_server_1.stdout  
+      when: 
+        - dns_server_1 is defined
+        - dns_server_1 not in cmc_dns_server_1.stdout  
+        - dns_from_dhcp_config != "1"
       register: result
       failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout" 
 
@@ -68,6 +71,9 @@
 
     - name: Set DNS Server 2 Setting
       raw : racadm config -g cfgLanNetworking -o cfgDNSServer1 {{ dns_server_2 }}  
-      when: dns_server_2 not in cmc_dns_server_2.stdout  
+      when: 
+        - dns_server_2 is defined
+        - dns_server_2 not in cmc_dns_server_2.stdout 
+        - dns_from_dhcp_config != "1" 
       register: result
       failed_when: "'ERROR' in result.stdout or 'Invalid' in result.stdout" 
